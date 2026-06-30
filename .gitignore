@@ -1,0 +1,11 @@
+/vendor
+/node_modules
+.env
+/storage
+/bootstrap/cache
+/.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+*.log
+.DS_Store
+Thumbs.db
