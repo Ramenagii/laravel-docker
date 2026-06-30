@@ -13,7 +13,7 @@
 /.zed
 /auth.json
 /node_modules
-/bootstrap/cache
+/bootstrap/cache/*.php
 /laravel
 /public/build
 /public/hot
