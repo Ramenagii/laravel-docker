@@ -17,7 +17,7 @@
                         <select wire:model.live="statusFilter" class="rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 text-sm">
                             <option value="">All Statuses</option>
                             <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
+                            <option value="completed">Completed</option>
                             <option value="archived">Archived</option>
                         </select>
                     </div>
@@ -36,7 +36,7 @@
                                 <span class="text-sm text-gray-500">{{ $project->tasks_count }} tasks</span>
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
                                     {{ $project->status === 'active' ? 'bg-green-100 text-green-800' : '' }}
-                                    {{ $project->status === 'inactive' ? 'bg-yellow-100 text-yellow-800' : '' }}
+                                    {{ $project->status === 'completed' ? 'bg-blue-100 text-blue-800' : '' }}
                                     {{ $project->status === 'archived' ? 'bg-gray-100 text-gray-800' : '' }}">
                                     {{ ucfirst($project->status) }}
                                 </span>
