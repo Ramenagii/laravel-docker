@@ -49,7 +49,7 @@
                         </div>
                     </div>
                     <div class="mt-3 sm:mt-0 sm:ml-4">
-                        <select wire:change="updateStatus($event.target.value)" class="rounded-xl border-slate-200 text-sm py-2 pr-8 focus:border-indigo-500 focus:ring-indigo-500 bg-slate-50">
+                        <select wire:change="updateStatus($event.target.value)" class="rounded-xl border-slate-200 text-sm py-2 pr-8 focus:border-indigo-500 focus:ring-indigo-500 bg-slate-50 disabled:opacity-50 disabled:cursor-wait" wire:loading.attr="disabled" wire:target="updateStatus">
                             <option value="todo" @if($task->status->value === 'todo') selected @endif>To Do</option>
                             <option value="in_progress" @if($task->status->value === 'in_progress') selected @endif>In Progress</option>
                             <option value="review" @if($task->status->value === 'review') selected @endif>Review</option>
@@ -143,8 +143,16 @@
                                     <div class="flex items-center space-x-2">
                                         <span class="text-xs text-slate-400">{{ $comment->created_at->diffForHumans() }}</span>
                                         @if($comment->user_id === auth()->id() || auth()->user()->can('tasks.delete'))
-                                            <button wire:click="deleteComment({{ $comment->id }})" class="text-slate-300 hover:text-red-500 transition-colors">
-                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                            <button wire:click="deleteComment({{ $comment->id }})" wire:loading.attr="disabled" wire:target="deleteComment({{ $comment->id }})" class="text-slate-300 hover:text-red-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                                                <span wire:loading.remove wire:target="deleteComment({{ $comment->id }})">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                                </span>
+                                                <span wire:loading wire:target="deleteComment({{ $comment->id }})">
+                                                    <svg class="animate-spin w-3.5 h-3.5 text-red-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                    </svg>
+                                                </span>
                                             </button>
                                         @endif
                                     </div>
@@ -172,11 +180,20 @@
                             <textarea wire:model="newComment" rows="2" placeholder="Write a comment..." class="w-full rounded-xl border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-500 focus:ring-indigo-500 text-sm resize-none transition-colors"></textarea>
                             @error('newComment') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
-                        <button type="submit" class="px-5 py-2.5 bg-indigo-600 text-white text-sm font-medium rounded-xl hover:bg-indigo-700 transition-colors shadow-sm flex items-center">
-                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                            </svg>
-                            Send
+                        <button type="submit" wire:target="addComment" wire:loading.attr="disabled" class="px-5 py-2.5 bg-indigo-600 text-white text-sm font-medium rounded-xl hover:bg-indigo-700 transition-colors shadow-sm flex items-center disabled:opacity-50 disabled:cursor-not-allowed">
+                            <span wire:loading.remove wire:target="addComment" class="flex items-center">
+                                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                                </svg>
+                                Send
+                            </span>
+                            <span wire:loading wire:target="addComment" class="flex items-center">
+                                <svg class="animate-spin -ml-1 mr-1.5 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Sending...
+                            </span>
                         </button>
                     </div>
                 </form>

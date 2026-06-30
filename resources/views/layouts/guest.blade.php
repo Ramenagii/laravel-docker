@@ -8,6 +8,7 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet" />
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @livewireStyles
     </head>
     <body class="font-sans text-slate-900 antialiased">
         <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gradient-to-br from-slate-100 via-white to-indigo-50">
@@ -23,10 +24,14 @@
             </div>
 
             <div class="w-full sm:max-w-md px-8 py-8 bg-white shadow-xl shadow-slate-200/50 rounded-2xl border border-slate-200">
-                {{ $slot }}
+                <div wire:transition.fade.duration.200ms>
+                    {{ $slot }}
+                </div>
             </div>
 
             <p class="mt-6 text-xs text-slate-400">&copy; {{ date('Y') }} TaskFlow. All rights reserved.</p>
         </div>
+
+        @livewireScripts
     </body>
 </html>

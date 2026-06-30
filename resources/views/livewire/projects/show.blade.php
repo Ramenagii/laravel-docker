@@ -48,9 +48,15 @@
                     <option value="high">High Priority</option>
                     <option value="urgent">Urgent</option>
                 </select>
-                <button type="submit" class="px-5 py-2.5 bg-indigo-600 text-white text-sm font-medium rounded-xl hover:bg-indigo-700 transition-colors shadow-sm whitespace-nowrap">
+                <button type="submit" wire:target="createTask" wire:loading.attr="disabled" class="px-5 py-2.5 bg-indigo-600 text-white text-sm font-medium rounded-xl hover:bg-indigo-700 transition-colors shadow-sm whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed">
                     <span wire:loading.remove wire:target="createTask">Add Task</span>
-                    <span wire:loading wire:target="createTask">Adding...</span>
+                    <span wire:loading wire:target="createTask" class="flex items-center">
+                        <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Adding...
+                    </span>
                 </button>
             </form>
             @error('newTaskTitle') <p class="text-red-500 text-xs mt-2 flex items-center"><svg class="w-3.5 h-3.5 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>{{ $message }}</p> @enderror
@@ -70,12 +76,20 @@
                     </div>
                     <div class="space-y-3 min-h-[80px] md:min-h-[120px]">
                         @foreach($this->todoTasks as $i => $task)
-                            <div x-data="{ show: false }" x-init="setTimeout(() => show = true, {{ $i }} * 30)" x-show="show" x-transition:enter="transition-all duration-300" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0"
+                            <div x-data="{ show: false, deleting: false }" x-init="setTimeout(() => show = true, {{ $i }} * 30)" x-show="show" x-transition:enter="transition-all duration-300" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0"
                                  class="bg-white rounded-xl shadow-sm border border-slate-200 p-3 md:p-3.5 hover:shadow-md hover:border-indigo-200 hover:-translate-y-0.5 transition-all duration-150 group">
                                 <div class="flex items-start justify-between">
                                     <a href="{{ route('tasks.show', $task) }}" wire:navigate class="text-sm font-medium text-slate-900 hover:text-indigo-600 transition-colors flex-1 mr-2">{{ $task->title }}</a>
-                                    <button wire:click="deleteTask({{ $task->id }})" wire:confirm="Delete this task?" class="opacity-0 group-hover:opacity-100 text-slate-300 hover:text-red-500 transition-all">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                    <button wire:click="deleteTask({{ $task->id }})" wire:confirm="Delete this task?" wire:loading.attr="disabled" wire:target="deleteTask({{ $task->id }})" class="opacity-0 group-hover:opacity-100 text-slate-300 hover:text-red-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                                        <span wire:loading.remove wire:target="deleteTask({{ $task->id }})">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                        </span>
+                                        <span wire:loading wire:target="deleteTask({{ $task->id }})">
+                                            <svg class="animate-spin w-4 h-4 text-red-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                        </span>
                                     </button>
                                 </div>
                                 <div class="flex items-center justify-between mt-3">
@@ -92,7 +106,7 @@
                                         </span>
                                         {{ ucfirst($task->priority->value) }}
                                     </span>
-                                    <select wire:change="updateTaskStatus({{ $task->id }}, $event.target.value)" class="text-xs border-0 bg-slate-50 rounded-lg py-1 text-slate-500 focus:ring-indigo-500 cursor-pointer">
+                                    <select wire:change="updateTaskStatus({{ $task->id }}, $event.target.value)" wire:loading.attr="disabled" wire:target="updateTaskStatus({{ $task->id }}, *)" class="text-xs border-0 bg-slate-50 rounded-lg py-1 text-slate-500 focus:ring-indigo-500 cursor-pointer disabled:opacity-50 disabled:cursor-wait">
                                         <option value="todo" selected>Todo</option>
                                         <option value="in_progress">In Progress</option>
                                         <option value="review">Review</option>
@@ -125,8 +139,16 @@
                                  class="bg-white rounded-xl shadow-sm border border-slate-200 p-3 md:p-3.5 hover:shadow-md hover:border-blue-200 hover:-translate-y-0.5 transition-all duration-150 group">
                                 <div class="flex items-start justify-between">
                                     <a href="{{ route('tasks.show', $task) }}" wire:navigate class="text-sm font-medium text-slate-900 hover:text-blue-600 transition-colors flex-1 mr-2">{{ $task->title }}</a>
-                                    <button wire:click="deleteTask({{ $task->id }})" wire:confirm="Delete this task?" class="opacity-0 group-hover:opacity-100 text-slate-300 hover:text-red-500 transition-all">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                    <button wire:click="deleteTask({{ $task->id }})" wire:confirm="Delete this task?" wire:loading.attr="disabled" wire:target="deleteTask({{ $task->id }})" class="opacity-0 group-hover:opacity-100 text-slate-300 hover:text-red-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                                        <span wire:loading.remove wire:target="deleteTask({{ $task->id }})">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                        </span>
+                                        <span wire:loading wire:target="deleteTask({{ $task->id }})">
+                                            <svg class="animate-spin w-4 h-4 text-red-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                        </span>
                                     </button>
                                 </div>
                                 <div class="flex items-center justify-between mt-3">
@@ -143,7 +165,7 @@
                                         </span>
                                         {{ ucfirst($task->priority->value) }}
                                     </span>
-                                    <select wire:change="updateTaskStatus({{ $task->id }}, $event.target.value)" class="text-xs border-0 bg-blue-50 rounded-lg py-1 text-blue-600 focus:ring-blue-500 cursor-pointer">
+                                    <select wire:change="updateTaskStatus({{ $task->id }}, $event.target.value)" wire:loading.attr="disabled" wire:target="updateTaskStatus({{ $task->id }}, *)" class="text-xs border-0 bg-blue-50 rounded-lg py-1 text-blue-600 focus:ring-blue-500 cursor-pointer disabled:opacity-50 disabled:cursor-wait">
                                         <option value="todo">Todo</option>
                                         <option value="in_progress" selected>In Progress</option>
                                         <option value="review">Review</option>
@@ -170,8 +192,16 @@
                                  class="bg-white rounded-xl shadow-sm border border-slate-200 p-3 md:p-3.5 hover:shadow-md hover:border-amber-200 hover:-translate-y-0.5 transition-all duration-150 group">
                                 <div class="flex items-start justify-between">
                                     <a href="{{ route('tasks.show', $task) }}" wire:navigate class="text-sm font-medium text-slate-900 hover:text-amber-600 transition-colors flex-1 mr-2">{{ $task->title }}</a>
-                                    <button wire:click="deleteTask({{ $task->id }})" wire:confirm="Delete this task?" class="opacity-0 group-hover:opacity-100 text-slate-300 hover:text-red-500 transition-all">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                    <button wire:click="deleteTask({{ $task->id }})" wire:confirm="Delete this task?" wire:loading.attr="disabled" wire:target="deleteTask({{ $task->id }})" class="opacity-0 group-hover:opacity-100 text-slate-300 hover:text-red-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                                        <span wire:loading.remove wire:target="deleteTask({{ $task->id }})">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                        </span>
+                                        <span wire:loading wire:target="deleteTask({{ $task->id }})">
+                                            <svg class="animate-spin w-4 h-4 text-red-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                        </span>
                                     </button>
                                 </div>
                                 <div class="flex items-center justify-between mt-3">
@@ -188,7 +218,7 @@
                                         </span>
                                         {{ ucfirst($task->priority->value) }}
                                     </span>
-                                    <select wire:change="updateTaskStatus({{ $task->id }}, $event.target.value)" class="text-xs border-0 bg-amber-50 rounded-lg py-1 text-amber-600 focus:ring-amber-500 cursor-pointer">
+                                    <select wire:change="updateTaskStatus({{ $task->id }}, $event.target.value)" wire:loading.attr="disabled" wire:target="updateTaskStatus({{ $task->id }}, *)" class="text-xs border-0 bg-amber-50 rounded-lg py-1 text-amber-600 focus:ring-amber-500 cursor-pointer disabled:opacity-50 disabled:cursor-wait">
                                         <option value="todo">Todo</option>
                                         <option value="in_progress">In Progress</option>
                                         <option value="review" selected>Review</option>
@@ -220,8 +250,16 @@
                                         </svg>
                                         <span class="text-sm font-medium text-slate-500 line-through">{{ $task->title }}</span>
                                     </div>
-                                    <button wire:click="deleteTask({{ $task->id }})" wire:confirm="Delete this task?" class="opacity-0 group-hover:opacity-100 text-slate-300 hover:text-red-500 transition-all">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                    <button wire:click="deleteTask({{ $task->id }})" wire:confirm="Delete this task?" wire:loading.attr="disabled" wire:target="deleteTask({{ $task->id }})" class="opacity-0 group-hover:opacity-100 text-slate-300 hover:text-red-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                                        <span wire:loading.remove wire:target="deleteTask({{ $task->id }})">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                        </span>
+                                        <span wire:loading wire:target="deleteTask({{ $task->id }})">
+                                            <svg class="animate-spin w-4 h-4 text-red-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                        </span>
                                     </button>
                                 </div>
                             </div>
