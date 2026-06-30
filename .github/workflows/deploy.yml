@@ -20,14 +20,17 @@ jobs:
           php-version: '8.2'
           extensions: pdo, pdo_mysql, mbstring, xml, curl, zip
 
-      - name: Create bootstrap cache directory
-        run: mkdir -p bootstrap/cache
-
       - name: Setup environment
         run: cp .env.example .env
 
-      - name: Install dependencies
-        run: composer install --no-dev --optimize-autoloader
+      - name: Create Laravel cache directories
+        run: mkdir -p bootstrap/cache storage/framework/cache storage/framework/sessions storage/framework/views
+
+      - name: Install dependencies (skip scripts)
+        run: composer install --no-dev --optimize-autoloader --no-scripts
+
+      - name: Run package discovery
+        run: php artisan package:discover --ansi
 
       - name: Run migrations
         run: php artisan migrate --force
