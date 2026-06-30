@@ -45,45 +45,47 @@
             </div>
         </div>
 
-        <!-- Project Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            @forelse($this->projects as $project)
-                <a href="{{ route('projects.show', $project) }}" wire:navigate
-                   class="group bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-lg hover:border-indigo-200 transition-all duration-200">
-                    <div class="p-5">
-                        <div class="flex items-start justify-between mb-3">
-                            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center flex-shrink-0 shadow-sm">
-                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
-                                </svg>
-                            </div>
-                            <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium
-                                {{ $project->status->value === 'active' ? 'bg-emerald-100 text-emerald-700' : '' }}
-                                {{ $project->status->value === 'completed' ? 'bg-blue-100 text-blue-700' : '' }}
-                                {{ $project->status->value === 'archived' ? 'bg-slate-100 text-slate-600' : '' }}">
-                                <span class="w-1.5 h-1.5 rounded-full mr-1.5
-                                    {{ $project->status->value === 'active' ? 'bg-emerald-500' : '' }}
-                                    {{ $project->status->value === 'completed' ? 'bg-blue-500' : '' }}
-                                    {{ $project->status->value === 'archived' ? 'bg-slate-400' : '' }}">
+        <!-- Project Grid with staggered animations -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
+            @forelse($this->projects as $i => $project)
+                <div x-data="{ show: false }" x-init="setTimeout(() => show = true, {{ $i }} * 50)" x-show="show" x-transition:enter="transition-all duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0">
+                    <a href="{{ route('projects.show', $project) }}" wire:navigate
+                       class="group block bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-lg hover:border-indigo-200 hover:-translate-y-0.5 transition-all duration-200">
+                        <div class="p-4 md:p-5">
+                            <div class="flex items-start justify-between mb-3">
+                                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center flex-shrink-0 shadow-sm group-hover:scale-110 transition-transform duration-200">
+                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                                    </svg>
+                                </div>
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium
+                                    {{ $project->status->value === 'active' ? 'bg-emerald-100 text-emerald-700' : '' }}
+                                    {{ $project->status->value === 'completed' ? 'bg-blue-100 text-blue-700' : '' }}
+                                    {{ $project->status->value === 'archived' ? 'bg-slate-100 text-slate-600' : '' }}">
+                                    <span class="w-1.5 h-1.5 rounded-full mr-1.5
+                                        {{ $project->status->value === 'active' ? 'bg-emerald-500' : '' }}
+                                        {{ $project->status->value === 'completed' ? 'bg-blue-500' : '' }}
+                                        {{ $project->status->value === 'archived' ? 'bg-slate-400' : '' }}">
+                                    </span>
+                                    {{ ucfirst($project->status->value) }}
                                 </span>
-                                {{ ucfirst($project->status->value) }}
-                            </span>
-                        </div>
-                        <h3 class="text-base font-semibold text-slate-900 group-hover:text-indigo-600 transition-colors mb-1">{{ $project->name }}</h3>
-                        <p class="text-sm text-slate-500 line-clamp-2">{{ Str::limit($project->description, 80) }}</p>
-                        <div class="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
-                            <div class="flex items-center text-sm text-slate-500">
-                                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                                </svg>
-                                <span>{{ $project->tasks_count }} {{ Str::plural('task', $project->tasks_count) }}</span>
                             </div>
-                            <svg class="w-5 h-5 text-slate-300 group-hover:text-indigo-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                            </svg>
+                            <h3 class="text-sm md:text-base font-semibold text-slate-900 group-hover:text-indigo-600 transition-colors mb-1">{{ $project->name }}</h3>
+                            <p class="text-xs md:text-sm text-slate-500 line-clamp-2">{{ Str::limit($project->description, 80) }}</p>
+                            <div class="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
+                                <div class="flex items-center text-xs md:text-sm text-slate-500">
+                                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                    </svg>
+                                    <span>{{ $project->tasks_count }} {{ Str::plural('task', $project->tasks_count) }}</span>
+                                </div>
+                                <svg class="w-5 h-5 text-slate-300 group-hover:text-indigo-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </div>
                         </div>
-                    </div>
-                </a>
+                    </a>
+                </div>
             @empty
                 <div class="col-span-full bg-white rounded-2xl shadow-sm border border-slate-200 p-12 text-center">
                     <svg class="w-16 h-16 text-slate-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

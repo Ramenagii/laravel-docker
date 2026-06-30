@@ -10,30 +10,54 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
 </head>
-<body class="font-sans antialiased bg-slate-100 text-slate-900">
+<body class="font-sans antialiased bg-slate-100 text-slate-900 scroll-smooth">
+
+<style>
+    [wire\:loading] [wire\:loading\:target], [wire\:loading\.delay] [wire\:loading\.delay\:target] { display: none; }
+    .livewire-progress-bar { background: linear-gradient(90deg, #6366f1, #8b5cf6, #ec4899); height: 3px; }
+    [x-cloak] { display: none !important; }
+</style>
 
 <div x-data="{ sidebarOpen: false }" class="min-h-screen flex">
     <!-- Mobile Overlay -->
     <div x-show="sidebarOpen"
          @click="sidebarOpen = false"
-         class="fixed inset-0 z-20 bg-black/50 lg:hidden"
+         x-transition:enter="transition-opacity duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition-opacity duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 z-20 bg-black/60 backdrop-blur-sm lg:hidden"
          style="display: none;">
     </div>
 
     <!-- Sidebar -->
     <aside x-bind:class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
-           class="fixed inset-y-0 left-0 z-30 w-64 bg-sidebar-bg flex flex-col transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:z-auto">
+           x-transition:enter="transition-transform duration-300 ease-in-out"
+           x-transition:enter-start="-translate-x-full"
+           x-transition:enter-end="translate-x-0"
+           x-transition:leave="transition-transform duration-200 ease-in-out"
+           x-transition:leave-start="translate-x-0"
+           x-transition:leave-end="-translate-x-full"
+           class="fixed inset-y-0 left-0 z-30 w-64 bg-sidebar-bg flex flex-col lg:translate-x-0 lg:static lg:z-auto lg:transition-none">
 
         <!-- Logo -->
-        <div class="h-16 flex items-center px-6 border-b border-slate-700/50">
+        <div class="h-16 flex items-center justify-between px-6 border-b border-slate-700/50">
             <a href="{{ route('dashboard') }}" wire:navigate class="flex items-center space-x-3">
-                <div class="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center">
+                <div class="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                 </div>
                 <span class="text-lg font-bold text-white tracking-tight">TaskFlow</span>
             </a>
+            <!-- Mobile Close -->
+            <button @click="sidebarOpen = false" class="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-700/50 transition-all">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
         </div>
 
         <!-- Navigation -->
@@ -100,7 +124,7 @@
 
         <!-- User Menu -->
         <div class="border-t border-slate-700/50 p-3">
-            <x-dropdown align="left" width="56" class="w-full">
+                <x-dropdown align="left" width="56" class="w-full">
                 <x-slot name="trigger">
                     <button class="w-full flex items-center px-3 py-2.5 text-sm font-medium text-sidebar-text rounded-xl hover:bg-sidebar-hover hover:text-white transition-all duration-150 group">
                         <span class="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-sm mr-3 shadow-sm">
@@ -171,27 +195,42 @@
             </div>
         </header>
 
-        <!-- Flash Messages -->
-        @if (session('message'))
-            <div class="mx-4 lg:mx-8 mt-4 px-4 py-3 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800 text-sm font-medium flex items-center">
-                <svg class="w-5 h-5 mr-2 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                {{ session('message') }}
-            </div>
-        @endif
+        <!-- Flash Messages (auto-dismiss) -->
+        <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 4000)">
+            @if (session('message'))
+                <div x-show="show" x-transition:enter="transition-all duration-500" x-transition:enter-start="opacity-0 -translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition-all duration-500" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-4"
+                     class="mx-4 lg:mx-8 mt-4 px-4 py-3 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800 text-sm font-medium flex items-center shadow-lg shadow-emerald-200/50">
+                    <svg class="w-5 h-5 mr-2 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span class="flex-1">{{ session('message') }}</span>
+                    <button @click="show = false" class="ml-2 text-emerald-500 hover:text-emerald-700 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            @endif
 
-        @if (session('error'))
-            <div class="mx-4 lg:mx-8 mt-4 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-red-800 text-sm font-medium flex items-center">
-                <svg class="w-5 h-5 mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                {{ session('error') }}
-            </div>
-        @endif
+            @if (session('error'))
+                <div x-show="show" x-transition:enter="transition-all duration-500" x-transition:enter-start="opacity-0 -translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition-all duration-500" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-4"
+                     class="mx-4 lg:mx-8 mt-4 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-red-800 text-sm font-medium flex items-center shadow-lg shadow-red-200/50">
+                    <svg class="w-5 h-5 mr-2 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span class="flex-1">{{ session('error') }}</span>
+                    <button @click="show = false" class="ml-2 text-red-500 hover:text-red-700 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            @endif
+        </div>
 
         <!-- Page Content -->
-        <main class="flex-1 overflow-y-auto">
+        <main class="flex-1 overflow-y-auto"
+              wire:loading.class="opacity-60 pointer-events-none transition-opacity duration-300">
             {{ $slot }}
         </main>
     </div>

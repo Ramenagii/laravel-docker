@@ -131,8 +131,9 @@
                 </h3>
 
                 <div class="space-y-4 mb-6" id="comments">
-                    @forelse($task->comments as $comment)
-                        <div class="flex space-x-3" wire:key="{{ $comment->id }}">
+                    @forelse($task->comments as $i => $comment)
+                        <div x-data="{ show: false }" x-init="setTimeout(() => show = true, {{ $i }} * 50)" x-show="show" x-transition:enter="transition-all duration-300" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0"
+                             class="flex space-x-3" wire:key="{{ $comment->id }}">
                             <div class="flex-shrink-0">
                                 <span class="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xs font-semibold shadow-sm">{{ substr($comment->user->name, 0, 2) }}</span>
                             </div>

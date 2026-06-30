@@ -1,21 +1,30 @@
 <div class="py-8 px-4 lg:px-8">
     <div class="max-w-7xl mx-auto">
         <!-- Page Header -->
-        <div class="mb-8">
-            <h1 class="text-2xl font-bold text-slate-900">Dashboard</h1>
-            <p class="text-sm text-slate-500 mt-1">Welcome back, {{ auth()->user()->name }}. Here's what's happening.</p>
+        <div class="mb-8 flex flex-col sm:flex-row sm:items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-bold text-slate-900">Dashboard</h1>
+                <p class="text-sm text-slate-500 mt-1">Welcome back, <span class="font-semibold text-slate-700">{{ auth()->user()->name }}</span>. Here's what's happening.</p>
+            </div>
+            <div class="mt-3 sm:mt-0 flex items-center space-x-2 text-xs text-slate-400">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>Last updated {{ now()->diffForHumans() }}</span>
+            </div>
         </div>
 
-        <!-- Stat Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow duration-200">
+        <!-- Stat Cards with counter animation -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5 mb-8">
+            <div x-data="{ count: 0, target: {{ $totalProjects }} }" x-init="let i = setInterval(() => { if (count < target) count++; else clearInterval(i) }, 30)"
+                 class="group bg-white rounded-2xl shadow-sm border border-slate-200 p-5 md:p-6 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-slate-500">Total Projects</p>
-                        <p class="text-3xl font-bold text-slate-900 mt-1">{{ $totalProjects }}</p>
+                        <p class="text-xs md:text-sm font-medium text-slate-500">Total Projects</p>
+                        <p class="text-2xl md:text-3xl font-bold text-slate-900 mt-1"><span x-text="count">0</span></p>
                     </div>
-                    <div class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-200">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-200 group-hover:scale-110 transition-transform duration-200">
+                        <svg class="w-5 h-5 md:w-6 md:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
                         </svg>
                     </div>
@@ -28,14 +37,15 @@
                 </div>
             </div>
 
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow duration-200">
+            <div x-data="{ count: 0, target: {{ array_sum($tasksByStatus) ?: 0 }} }" x-init="let i = setInterval(() => { if (count < target) count++; else clearInterval(i) }, 20)"
+                 class="group bg-white rounded-2xl shadow-sm border border-slate-200 p-5 md:p-6 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-slate-500">Total Tasks</p>
-                        <p class="text-3xl font-bold text-slate-900 mt-1">{{ array_sum($tasksByStatus) ?: 0 }}</p>
+                        <p class="text-xs md:text-sm font-medium text-slate-500">Total Tasks</p>
+                        <p class="text-2xl md:text-3xl font-bold text-slate-900 mt-1"><span x-text="count">0</span></p>
                     </div>
-                    <div class="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-200">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-200 group-hover:scale-110 transition-transform duration-200">
+                        <svg class="w-5 h-5 md:w-6 md:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
                         </svg>
                     </div>
@@ -45,14 +55,15 @@
                 </div>
             </div>
 
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow duration-200">
+            <div x-data="{ count: 0, target: {{ $myTasks }} }" x-init="let i = setInterval(() => { if (count < target) count++; else clearInterval(i) }, 30)"
+                 class="group bg-white rounded-2xl shadow-sm border border-slate-200 p-5 md:p-6 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-slate-500">My Tasks</p>
-                        <p class="text-3xl font-bold text-slate-900 mt-1">{{ $myTasks }}</p>
+                        <p class="text-xs md:text-sm font-medium text-slate-500">My Tasks</p>
+                        <p class="text-2xl md:text-3xl font-bold text-slate-900 mt-1"><span x-text="count">0</span></p>
                     </div>
-                    <div class="w-12 h-12 bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl flex items-center justify-center shadow-lg shadow-amber-200">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl flex items-center justify-center shadow-lg shadow-amber-200 group-hover:scale-110 transition-transform duration-200">
+                        <svg class="w-5 h-5 md:w-6 md:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                         </svg>
                     </div>
@@ -62,14 +73,15 @@
                 </div>
             </div>
 
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow duration-200">
+            <div x-data="{ count: 0, target: {{ $myPendingTasks }} }" x-init="let i = setInterval(() => { if (count < target) count++; else clearInterval(i) }, 30)"
+                 class="group bg-white rounded-2xl shadow-sm border border-slate-200 p-5 md:p-6 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-slate-500">Pending Tasks</p>
-                        <p class="text-3xl font-bold text-slate-900 mt-1">{{ $myPendingTasks }}</p>
+                        <p class="text-xs md:text-sm font-medium text-slate-500">Pending Tasks</p>
+                        <p class="text-2xl md:text-3xl font-bold text-slate-900 mt-1"><span x-text="count">0</span></p>
                     </div>
-                    <div class="w-12 h-12 bg-gradient-to-br from-rose-500 to-rose-600 rounded-xl flex items-center justify-center shadow-lg shadow-rose-200">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-rose-500 to-rose-600 rounded-xl flex items-center justify-center shadow-lg shadow-rose-200 group-hover:scale-110 transition-transform duration-200">
+                        <svg class="w-5 h-5 md:w-6 md:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>

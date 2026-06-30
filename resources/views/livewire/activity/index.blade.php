@@ -17,15 +17,16 @@
                 </div>
             </div>
 
-            <!-- Activity List (Timeline) -->
+            <!-- Activity List (Timeline) with staggered animation -->
             <div class="relative">
                 <div class="absolute left-8 top-0 bottom-0 w-px bg-slate-200"></div>
-                <div class="divide-y divide-slate-100">
-                    @forelse($activities as $activity)
-                        <div class="relative px-6 py-5 hover:bg-slate-50/50 transition-colors">
+                <div>
+                    @forelse($activities as $i => $activity)
+                        <div x-data="{ show: false }" x-init="setTimeout(() => show = true, {{ $i }} * 30)" x-show="show" x-transition:enter="transition-all duration-300" x-transition:enter-start="opacity-0 translate-x-4" x-transition:enter-end="opacity-100 translate-x-0"
+                             class="relative px-6 py-5 hover:bg-slate-50/50 transition-colors">
                             <div class="flex items-start space-x-4">
                                 <!-- Timeline Dot -->
-                                <div class="relative z-10 flex-shrink-0 mt-0.5">
+                                <div class="relative z-10 flex-shrink-0 mt-0.5 group-hover:scale-110 transition-transform">
                                     <div class="w-8 h-8 rounded-full flex items-center justify-center shadow-sm
                                         {{ $activity->event === 'created' ? 'bg-emerald-100 text-emerald-600 ring-4 ring-white' : '' }}
                                         {{ $activity->event === 'updated' ? 'bg-blue-100 text-blue-600 ring-4 ring-white' : '' }}
@@ -53,12 +54,12 @@
 
                                 <!-- Content -->
                                 <div class="flex-1 min-w-0">
-                                    <div class="flex items-center justify-between">
+                                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                                         <p class="text-sm text-slate-900">
                                             <span class="font-semibold">{{ $activity->causer?->name ?? 'System' }}</span>
                                             <span class="text-slate-500"> {{ $activity->description }}</span>
                                         </p>
-                                        <span class="text-xs px-2 py-0.5 rounded-full font-medium ml-2 flex-shrink-0
+                                        <span class="text-xs px-2 py-0.5 rounded-full font-medium sm:ml-2 flex-shrink-0 self-start
                                             {{ $activity->event === 'created' ? 'bg-emerald-100 text-emerald-700' : '' }}
                                             {{ $activity->event === 'updated' ? 'bg-blue-100 text-blue-700' : '' }}
                                             {{ $activity->event === 'deleted' ? 'bg-red-100 text-red-700' : '' }}
@@ -82,9 +83,9 @@
                                         </div>
                                     @endif
 
-                                    <div class="flex items-center space-x-2 mt-1.5">
+                                    <div class="flex flex-wrap items-center gap-x-2 mt-1.5">
                                         <span class="text-xs text-slate-400">{{ $activity->created_at->format('M j, Y g:i A') }}</span>
-                                        <span class="text-xs text-slate-300">&middot;</span>
+                                        <span class="text-xs text-slate-300 hidden sm:inline">&middot;</span>
                                         <span class="text-xs text-slate-400">{{ $activity->created_at->diffForHumans() }}</span>
                                     </div>
                                 </div>
