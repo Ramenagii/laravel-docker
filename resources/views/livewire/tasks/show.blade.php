@@ -9,28 +9,28 @@
                         <h1 class="text-xl font-bold text-gray-900">{{ $task->title }}</h1>
                         <div class="flex items-center space-x-3 mt-2">
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                {{ $task->status === 'todo' ? 'bg-gray-100 text-gray-800' : '' }}
-                                {{ $task->status === 'in_progress' ? 'bg-blue-100 text-blue-800' : '' }}
-                                {{ $task->status === 'review' ? 'bg-yellow-100 text-yellow-800' : '' }}
-                                {{ $task->status === 'done' ? 'bg-green-100 text-green-800' : '' }}">
-                                {{ str_replace('_', ' ', ucfirst($task->status)) }}
+                                {{ $task->status->value === 'todo' ? 'bg-gray-100 text-gray-800' : '' }}
+                                {{ $task->status->value === 'in_progress' ? 'bg-blue-100 text-blue-800' : '' }}
+                                {{ $task->status->value === 'review' ? 'bg-yellow-100 text-yellow-800' : '' }}
+                                {{ $task->status->value === 'done' ? 'bg-green-100 text-green-800' : '' }}">
+                                {{ str_replace('_', ' ', ucfirst($task->status->value)) }}
                             </span>
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                {{ $task->priority === 'urgent' ? 'bg-red-100 text-red-800' : '' }}
-                                {{ $task->priority === 'high' ? 'bg-orange-100 text-orange-800' : '' }}
-                                {{ $task->priority === 'medium' ? 'bg-blue-100 text-blue-800' : '' }}
-                                {{ $task->priority === 'low' ? 'bg-gray-100 text-gray-800' : '' }}">
-                                {{ ucfirst($task->priority) }}
+                                {{ $task->priority->value === 'urgent' ? 'bg-red-100 text-red-800' : '' }}
+                                {{ $task->priority->value === 'high' ? 'bg-orange-100 text-orange-800' : '' }}
+                                {{ $task->priority->value === 'medium' ? 'bg-blue-100 text-blue-800' : '' }}
+                                {{ $task->priority->value === 'low' ? 'bg-gray-100 text-gray-800' : '' }}">
+                                {{ ucfirst($task->priority->value) }}
                             </span>
                         </div>
                     </div>
                     <div class="ml-4">
                         <select wire:change="updateStatus($event.target.value)" class="rounded-lg border-gray-300 text-sm">
-                            <option value="todo" @if($task->status === 'todo') selected @endif>Todo</option>
-                            <option value="in_progress" @if($task->status === 'in_progress') selected @endif>In Progress</option>
-                            <option value="review" @if($task->status === 'review') selected @endif>Review</option>
-                            <option value="done" @if($task->status === 'done') selected @endif>Done</option>
-                            <option value="cancelled" @if($task->status === 'cancelled') selected @endif>Cancelled</option>
+                            <option value="todo" @if($task->status->value === 'todo') selected @endif>Todo</option>
+                            <option value="in_progress" @if($task->status->value === 'in_progress') selected @endif>In Progress</option>
+                            <option value="review" @if($task->status->value === 'review') selected @endif>Review</option>
+                            <option value="done" @if($task->status->value === 'done') selected @endif>Done</option>
+                            <option value="cancelled" @if($task->status->value === 'cancelled') selected @endif>Cancelled</option>
                         </select>
                     </div>
                 </div>

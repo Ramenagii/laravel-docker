@@ -33,7 +33,7 @@
                         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-3">
                             <a href="{{ route('tasks.show', $task) }}" wire:navigate class="text-sm font-medium text-gray-900 hover:text-indigo-600">{{ $task->title }}</a>
                             <div class="flex items-center justify-between mt-2">
-                                <span class="text-xs px-2 py-0.5 rounded-full {{ $task->priority === 'urgent' ? 'bg-red-100 text-red-700' : ($task->priority === 'high' ? 'bg-orange-100 text-orange-700' : ($task->priority === 'medium' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700')) }}">{{ ucfirst($task->priority) }}</span>
+                                <span class="text-xs px-2 py-0.5 rounded-full {{ $task->priority->value === 'urgent' ? 'bg-red-100 text-red-700' : ($task->priority->value === 'high' ? 'bg-orange-100 text-orange-700' : ($task->priority->value === 'medium' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700')) }}">{{ ucfirst($task->priority->value) }}</span>
                                 <div class="flex items-center space-x-1">
                                     <select wire:change="updateTaskStatus({{ $task->id }}, $event.target.value)" class="text-xs border-gray-200 rounded">
                                         <option value="todo" selected>Todo</option>
@@ -59,7 +59,7 @@
                         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-3">
                             <a href="{{ route('tasks.show', $task) }}" wire:navigate class="text-sm font-medium text-gray-900 hover:text-indigo-600">{{ $task->title }}</a>
                             <div class="flex items-center justify-between mt-2">
-                                <span class="text-xs px-2 py-0.5 rounded-full {{ $task->priority === 'urgent' ? 'bg-red-100 text-red-700' : ($task->priority === 'high' ? 'bg-orange-100 text-orange-700' : ($task->priority === 'medium' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700')) }}">{{ ucfirst($task->priority) }}</span>
+                                <span class="text-xs px-2 py-0.5 rounded-full {{ $task->priority->value === 'urgent' ? 'bg-red-100 text-red-700' : ($task->priority->value === 'high' ? 'bg-orange-100 text-orange-700' : ($task->priority->value === 'medium' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700')) }}">{{ ucfirst($task->priority->value) }}</span>
                                 <select wire:change="updateTaskStatus({{ $task->id }}, $event.target.value)" class="text-xs border-gray-200 rounded">
                                     <option value="todo">Todo</option>
                                     <option value="in_progress" selected>In Progress</option>
@@ -80,7 +80,7 @@
                         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-3">
                             <a href="{{ route('tasks.show', $task) }}" wire:navigate class="text-sm font-medium text-gray-900 hover:text-indigo-600">{{ $task->title }}</a>
                             <div class="flex items-center justify-between mt-2">
-                                <span class="text-xs px-2 py-0.5 rounded-full {{ $task->priority === 'urgent' ? 'bg-red-100 text-red-700' : ($task->priority === 'high' ? 'bg-orange-100 text-orange-700' : ($task->priority === 'medium' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700')) }}">{{ ucfirst($task->priority) }}</span>
+                                <span class="text-xs px-2 py-0.5 rounded-full {{ $task->priority->value === 'urgent' ? 'bg-red-100 text-red-700' : ($task->priority->value === 'high' ? 'bg-orange-100 text-orange-700' : ($task->priority->value === 'medium' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700')) }}">{{ ucfirst($task->priority->value) }}</span>
                                 <select wire:change="updateTaskStatus({{ $task->id }}, $event.target.value)" class="text-xs border-gray-200 rounded">
                                     <option value="todo">Todo</option>
                                     <option value="in_progress">In Progress</option>

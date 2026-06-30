@@ -35,10 +35,10 @@
                             <div class="flex items-center space-x-4">
                                 <span class="text-sm text-gray-500">{{ $project->tasks_count }} tasks</span>
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                    {{ $project->status === 'active' ? 'bg-green-100 text-green-800' : '' }}
-                                    {{ $project->status === 'completed' ? 'bg-blue-100 text-blue-800' : '' }}
-                                    {{ $project->status === 'archived' ? 'bg-gray-100 text-gray-800' : '' }}">
-                                    {{ ucfirst($project->status) }}
+                                    {{ $project->status->value === 'active' ? 'bg-green-100 text-green-800' : '' }}
+                                    {{ $project->status->value === 'completed' ? 'bg-blue-100 text-blue-800' : '' }}
+                                    {{ $project->status->value === 'archived' ? 'bg-gray-100 text-gray-800' : '' }}">
+                                    {{ ucfirst($project->status->value) }}
                                 </span>
                             </div>
                         </div>
