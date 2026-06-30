@@ -1,10 +1,9 @@
 <?php
 
-use App\Providers\AppServiceProvider;
-
 return [
-    AppServiceProvider::class,
+    App\Providers\AppServiceProvider::class,
+    App\Providers\VoltServiceProvider::class,
     Livewire\LivewireServiceProvider::class,
-    Spatie\Permission\PermissionServiceProvider::class,
     Spatie\Activitylog\ActivitylogServiceProvider::class,
+    Spatie\Permission\PermissionServiceProvider::class,
 ];

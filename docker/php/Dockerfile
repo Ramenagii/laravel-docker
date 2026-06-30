@@ -8,6 +8,8 @@ RUN apt-get update && apt-get install -y \
     libonig-dev \
     libxml2-dev \
     libpq-dev \
+    libcurl4-openssl-dev \
+    libzip-dev \
     zip \
     unzip \
     && rm -rf /var/lib/apt/lists/*
