@@ -1,0 +1,5 @@
+Git: git version 2.51.0.windows.1
+Composer: Composer version 2.10-dev (installed at C:\Users\ramen\AppData\Local\Composer\composer.phar)
+Node: v24.18.0
+PHP: PHP 8.2.31 (cli) (built: May  5 2026 16:43:38) (ZTS Visual C++ 2019 x64)
+Docker: NOT AVAILABLE - Docker Desktop installation requires GUI/admin interaction
