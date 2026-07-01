@@ -86,12 +86,29 @@ Browser -> Nginx (port 8080) -> PHP-FPM -> Livewire Component -> Blade View —>
 
 ## Docker Services
 
-| Service | Image | Port |
-|---------|-------|------|
-| nginx | nginx:alpine | 8080 |
-| php-fpm | php:8.2-fpm (custom) | --- |
-| mysql | mysql:8.0 | 3306 |
-| phpMyAdmin | phpmyadmin/phpmyadmin | 8081 |
+| Service | Image | Port | Config File |
+|---------|-------|------|-------------|
+| nginx | nginx:alpine | 8080 | `docker/nginx/default.conf` |
+| php-fpm | php:8.2-fpm (custom) | --- | `docker/php/Dockerfile` |
+| mysql | mysql:8.0 | 3306 | `docker-compose.yml` |
+| phpMyAdmin | phpmyadmin/phpmyadmin | 8081 | `docker-compose.yml` |
+
+### Containerization Files
+
+| File | What It Does |
+|------|-------------|
+| `docker-compose.yml` | Defines all 4 services, port mappings, volumes, and environment variables |
+| `docker/php/Dockerfile` | Custom PHP 8.2 image with pdo_mysql, mbstring, xml, curl, zip extensions |
+| `docker/nginx/default.conf` | Nginx config — routes all requests to `php-fpm:9000` |
+
+### Useful Commands
+
+```bash
+docker compose ps              # List running containers
+docker compose logs nginx      # View nginx logs
+docker compose exec php-fpm bash  # SSH into PHP container
+docker compose down            # Stop all containers
+```
 
 ## How It Was Built (Step by Step)
 
