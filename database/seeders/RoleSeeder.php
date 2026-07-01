@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -64,9 +65,19 @@ class RoleSeeder extends Seeder
             'activitylog.view',
         ]);
 
-        $user = \App\Models\User::first();
-        if ($user) {
-            $user->assignRole('admin');
+        $adminUser = User::where('email', 'admin@example.com')->first();
+        if ($adminUser) {
+            $adminUser->assignRole('admin');
+        }
+
+        $managerUser = User::where('email', 'manager@example.com')->first();
+        if ($managerUser) {
+            $managerUser->assignRole('manager');
+        }
+
+        $memberUser = User::where('email', 'member@example.com')->first();
+        if ($memberUser) {
+            $memberUser->assignRole('member');
         }
     }
 }

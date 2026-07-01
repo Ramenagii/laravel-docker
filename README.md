@@ -1,59 +1,115 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# TaskFlow — Project Task Manager
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A Kanban-style project management app built with **Laravel 12 + Livewire 3 + Tailwind CSS**.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Projects** — Create, search, filter, and manage projects
+- **Kanban Board** — 4 columns (Todo / In Progress / Review / Done) with inline status updates
+- **Tasks** — Create, assign, prioritize, tag, and comment on tasks
+- **Activity Log** — Full audit trail of all changes with search and pagination
+- **Role-Based Access** — Admin, Manager, and Member roles via Spatie Permissions
+- **Auth** — Login, register, password reset via Breeze (Livewire Volt)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Tech Stack
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+| Layer | Technology |
+|-------|-----------|
+| Backend | Laravel 12, PHP 8.2 |
+| Frontend | Livewire 3, Alpine.js, Tailwind CSS, Vite |
+| Database | MySQL 8.0 (Docker) |
+| Auth | Laravel Breeze (Livewire Volt) |
+| Permissions | Spatie Laravel Permission |
+| Logging | Spatie Laravel Activitylog |
+| Infrastructure | Docker Compose (nginx + php-fpm + mysql + phpMyAdmin) |
 
-## Learning Laravel
+## Quick Start
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+```bash
+# Start Docker containers
+docker compose up -d
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+# Install PHP dependencies
+docker compose exec php-fpm composer install
 
-## Laravel Sponsors
+# Run migrations and seed demo data
+docker compose exec php-fpm php artisan migrate --seed
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+# Install & build frontend
+npm install && npm run build
+```
 
-### Premium Partners
+Visit **http://localhost:8080**
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### phpMyAdmin
+Visit **http://localhost:8081** (Server: `mysql`, User: `laravel`, Password: `secret`)
 
-## Contributing
+## Test Accounts
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+| Role | Email | Password |
+|------|-------|----------|
+| Admin | admin@example.com | password |
+| Manager | manager@example.com | password |
+| Member | member@example.com | password |
 
-## Code of Conduct
+## Architecture
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Request Flow
 
-## Security Vulnerabilities
+Browser -> Nginx (port 8080) -> PHP-FPM -> Livewire Component -> Blade View —> MySQL (via Eloquent)
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Key Files
+
+| File | Purpose |
+|------|---------|
+| app/Livewire/Projects/Index.php | Project list with search, filter, and create |
+| app/Livewire/Projects/Show.php | Kanban board with 4 columns, task CRUD |
+| app/Livewire/Tasks/Show.php | Task detail view with comment thread |
+| app/Livewire/Dashboard.php | Stats overview and recent activity |
+| app/Livewire/Activity/Index.php | Full activity log with search/pagination |
+| app/Livewire/Users/Index.php | User role management (admin only) |
+| app/Models/Project.php | Project model with status enum + LogsActivity |
+| app/Models/Task.php | Task model with status/priority enums |
+| app/Models/Comment.php | Comment model with activity logging |
+| app/Models/Tag.php | Tag model with color, many-to-many with tasks |
+| app/Enums/ProjectStatus.php | active, completed, archived |
+| app/Enums/TaskStatus.php | todo, in_progress, review, done, cancelled |
+| app/Enums/TaskPriority.php | low, medium, high, urgent |
+
+## Design Decisions
+
+1. **String-backed Enums** — Clean DB storage (VARCHAR) with PHP type safety
+2. **Computed Properties** — Kanban columns use #[Computed] for per-request caching
+3. **Server-side Authorization** — All mutations gated via `$this->authorize()`, not just Blade @can
+4. **Enum ->value in Blade** — Enums dont match strings directly; use `$enum->value` in comparisons
+5. **Alpine.js Animations** — Counter effects on stats, staggered card entries, page transitions
+
+## Docker Services
+
+| Service | Image | Port |
+|---------|-------|------|
+| nginx | nginx:alpine | 8080 |
+| php-fpm | php:8.2-fpm (custom) | --- |
+| mysql | mysql:8.0 | 3306 |
+| phpMyAdmin | phpmyadmin/phpmyadmin | 8081 |
+
+## How It Was Built (Step by Step)
+
+1. **Laravel 12 scaffold** — `composer create-project laravel/laravel` then Docker Compose for nginx + php-fpm + mysql
+2. **Breeze auth** — Installed Livewire Volt stack for login/register/password-reset
+3. **Models + Migrations** — Created Project, Task, Comment, Tag models with relationships, foreign keys, and string-backed enum casts
+4. **Spatie packages** — Installed laravel-permission for roles (admin/manager/member) and laravel-activitylog for audit trail
+5. **Enums** — Custom string-backed enums for ProjectStatus, TaskStatus, TaskPriority
+6. **Livewire components** — Full-page components for Dashboard, Projects Index/Show, Tasks Show, Activity Index, Users Index
+7. **Seeder** — Seeds 3 roles, 9 permissions, 3 demo users, 2 projects, 10 tasks, 4 tags, comments
+8. **Authorization gates** — Wired Spatie permissions into Laravel gates; all Livewire mutations use `$this->authorize()`
+9. **UI polish** — Dark sidebar layout, gradients, responsive Kanban, Alpine.js animations
+10. **Bug fixes** — Fixed enum comparison (`->value`), status filter naming, storage permissions
+11. **CI fix** — Added `bootstrap/cache` directory creation + `.gitkeep` for GitHub Actions workflow
+12. **Button loading states** — All buttons show spinners and disable during processing
+13. **Page transitions** — Fade/slide animations on page navigation via `wire:transition`
+14. **Modal animations** — Backdrop blur + scale transitions on all modals and dropdowns
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+MIT
